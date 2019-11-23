@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/tarik/frasier_ws/src/frasier_demos/cmake-build-debug/devel/setup.sh

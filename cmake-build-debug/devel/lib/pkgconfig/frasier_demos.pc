@@ -1,0 +1,8 @@
+prefix=/home/tarik/frasier_ws/src/frasier_demos/cmake-build-debug/devel
+
+Name: frasier_demos
+Description: Description of frasier_demos
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/tarik/frasier_ws/src/frasier_demos/cmake-build-debug/devel/lib 
+Requires: 
