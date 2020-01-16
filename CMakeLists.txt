@@ -144,6 +144,9 @@ include_directories(
 add_executable(table src/table.cpp)
 target_link_libraries(table ${catkin_LIBRARIES} ${OpenRAVE_BOTH_LIBRARIES} ${trajopt_LIBRARIES})
 
+add_executable(ces_demo src/ces_demo.cpp)
+target_link_libraries(ces_demo ${catkin_LIBRARIES} ${OpenRAVE_BOTH_LIBRARIES} ${trajopt_LIBRARIES})
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/frasier_demos.cpp

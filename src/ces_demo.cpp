@@ -53,11 +53,11 @@ int main(int argc, char **argv) {
 
     tmc_msgs::Voice take_object;
     take_object.language = tmc_msgs::Voice::kEnglish;
-    take_object.sentence = "Please take the object!";
+    take_object.sentence = "Please take the Pringles from me!";
 
     tmc_msgs::Voice place_object;
     place_object.language = tmc_msgs::Voice::kEnglish;
-    place_object.sentence = "No one took the object! I will place it in the bin.";
+    place_object.sentence = "No one took the Pringles can! I will place it on the table.";
 
     geometry_msgs::Pose2D home_pose;
     home_pose.x = 0.0;
@@ -76,8 +76,8 @@ int main(int argc, char **argv) {
     home_goal.target_pose = home_pose_nav;
 
     geometry_msgs::Pose2D handoff_pose;
-    handoff_pose.x = -1.80;
-    handoff_pose.y = 1.2;
+    handoff_pose.x = -1.106;
+    handoff_pose.y = -0.442;
     handoff_pose.theta = M_PI;
 
     geometry_msgs::PoseStamped handoff_pose_nav;
@@ -92,8 +92,8 @@ int main(int argc, char **argv) {
     handoff_goal.target_pose = handoff_pose_nav;
 
     geometry_msgs::Pose2D place_pose;
-    place_pose.x = -0.15;
-    place_pose.y = 0.44;
+    place_pose.x = -1.325;
+    place_pose.y = -0.160;
     place_pose.theta = M_PI;
 
     geometry_msgs::PoseStamped place_pose_nav;
@@ -137,12 +137,13 @@ int main(int argc, char **argv) {
             trajectory_msgs::JointTrajectory traj_smooth;
             rave.smoothTrajectory(traj_raw, traj_smooth);
             controller.executeWholeBodyTraj(traj_smooth);
+//            ros::Duration(2.0).sleep();
 
             controller.graspOrRelease(GRIPPER_STATE::GRASP);
             rave.grabObject(grasp.obj_name);
 
             controller.moveBase(home_pose);
-            controller.moveArmToKnownState(ARM_STATE::CES_GO_CONF);
+            controller.moveArmToKnownState(ARM_STATE::GO_CONF);
             ros::Duration(1.0).sleep();
             nav_cli.sendGoal(handoff_goal);
 
@@ -169,33 +170,41 @@ int main(int argc, char **argv) {
               talk_pub.publish(place_object);
 
               //No one grasped the object - move to the table/bin place position
-              controller.moveArmToKnownState(ARM_STATE::CES_GO_CONF);
+              controller.moveArmToKnownState(ARM_STATE::GO_CONF);
               ros::Duration(1.0).sleep();
               nav_cli.sendGoal(place_goal);
               nav_cli.waitForResult();
-
-              //Place the object in the bin/table
-              controller.moveArmToKnownState(ARM_STATE::CES_BIN_PLACE);
+//
+//              //Place the object in the bin/table
+              controller.moveArmToKnownState(ARM_STATE::PLACE_TABLE_ONE);
               ros::Duration(1.0).sleep();
+              controller.moveArmToKnownState(ARM_STATE::PLACE_TABLE_TWO);
+               ros::Duration(1.0).sleep();
               controller.graspOrRelease(GRIPPER_STATE::RELEASE);
               rave.releaseObject(grasp.obj_name);
               ros::Duration(0.1).sleep();
+              //ros::Duration(1.0).sleep();
+              controller.moveArmToKnownState(ARM_STATE::PLACE_TABLE_ONE);
+              //ros::Duration(1.0).sleep();
+              controller.graspOrRelease(GRIPPER_STATE::GRASP);
+
+
             }
 
-            controller.moveArmToKnownState(ARM_STATE::CES_GO_CONF);
+            controller.moveArmToKnownState(ARM_STATE::GO_CONF);
             ros::Duration(1.0).sleep();
             nav_cli.sendGoal(home_goal);
             nav_cli.waitForResult();
+            controller.graspOrRelease(GRIPPER_STATE::RELEASE);
 
             rave.removeTableObjects();
-            controller.moveToKnownState(MOVE_STATE::PICK);
+            controller.moveArmToKnownState(ARM_STATE ::GRASP_CONF);
             controller.moveHeadToKnownState(HEAD_STATE::LOOK_TABLE_FRONT);
             ros::Duration(3.0).sleep();
 
         } else {
             std::cout << "TASK: there is no object left on the table!!!" << std::endl;
         }
-
 
     }
 
